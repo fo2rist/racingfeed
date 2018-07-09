@@ -25,8 +25,11 @@ namespace racingfeed.Services
 
         public async Task<IEnumerable<FeedItem>> GetItemsAsync(bool forceRefresh = false)
         {
-            
-
+			var config = Config.Config.Read();
+			Auth.SetUserCredentials(config.TwitterConsumerKey,
+			                        config.TwitterConsumerSecret,
+			                        config.TwitterUserAccessToken,
+			                        config.TwitterUserAccessSercret);
             items = Timeline.GetUserTimeline("alo_oficial")
                     .Select(it => new FeedItem
                     {

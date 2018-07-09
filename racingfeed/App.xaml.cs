@@ -13,7 +13,6 @@ namespace racingfeed
         {
             InitializeComponent();
 
-
             MainPage = new MainPage();
         }
 
