@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using racingfeed.Models;
 using Tweetinvi;
+using Tweetinvi.Models.Entities;
 
 [assembly: Xamarin.Forms.Dependency(typeof(racingfeed.Services.TwitterDataStore))]
 namespace racingfeed.Services
@@ -30,12 +31,19 @@ namespace racingfeed.Services
 			                        config.TwitterConsumerSecret,
 			                        config.TwitterUserAccessToken,
 			                        config.TwitterUserAccessSercret);
-            items = Timeline.GetUserTimeline("alo_oficial")
-                    .Select(it => new FeedItem
-                    {
-                        Id = it.Id.ToString(),
-                        Text = it.CreatedBy.Name,
-                        Description = it.Text
+			items = Timeline.GetUserTimeline("alo_oficial")
+					.Select(it => new FeedItem
+					{
+						Id = it.Id.ToString(),
+						Text = it.CreatedBy.Name,
+						Description = it.Text,
+				        Urls = it.Urls
+				                 .Select(url => url.ToString())
+				                 .ToList(),
+				        ImageUrls = it.Media
+				                  .Where(media => media.MediaType == "photo")
+				                  .Select(photo => photo.MediaURL)
+				                  .ToList(),
                     }).ToList();
 
             return await Task.FromResult(items);
