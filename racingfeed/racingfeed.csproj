@@ -8,4 +8,10 @@
     <PackageReference Include="Xamarin.Forms" Version="3.0.0.446417" />  
     <PackageReference Include="TweetinviAPI" Version="3.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Config\Config.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Config\Config.json" />
+  </ItemGroup>
 </Project>
