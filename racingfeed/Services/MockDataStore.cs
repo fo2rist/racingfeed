@@ -35,7 +35,7 @@ namespace racingfeed.Services
             return await Task.FromResult(items.FirstOrDefault(s => s.Id == id));
         }
 
-        public async Task<IEnumerable<FeedItem>> GetItemsAsync(bool forceRefresh = false)
+        public async Task<IEnumerable<FeedItem>> LoadItemsAsync(bool forceRefresh = false)
         {
             return await Task.FromResult(items);
         }

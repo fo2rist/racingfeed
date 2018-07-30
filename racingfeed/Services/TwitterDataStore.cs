@@ -24,7 +24,7 @@ namespace racingfeed.Services
             return await Task.FromResult(items.FirstOrDefault(it => it.Id == id));
         }
 
-        public async Task<IEnumerable<FeedItem>> GetItemsAsync(bool forceRefresh = false)
+        public async Task<IEnumerable<FeedItem>> LoadItemsAsync(bool forceRefresh = false)
         {
 			var config = Config.Config.Read();
 			Auth.SetUserCredentials(config.TwitterConsumerKey,

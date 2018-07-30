@@ -37,7 +37,7 @@ namespace racingfeed.ViewModels
             try
             {
                 Items.Clear();
-                var items = await DataStore.GetItemsAsync(true);
+                var items = await DataStore.LoadItemsAsync(true);
                 foreach (var item in items)
                 {
                     Items.Add(item);
