@@ -46,5 +46,8 @@ Thumbs.db
 **/Android/**/[Rr]esource.[Dd]esigner.cs
 **/Droid/**/[Rr]esource.[Dd]esigner.cs
 
+# Xamarin studio plugin files
+**/.mfractor/
+
 # Private config
 **/racingfeed/Config/Config.json
