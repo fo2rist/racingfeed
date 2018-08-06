@@ -26,26 +26,41 @@ namespace racingfeed.Services
 
         public async Task<IEnumerable<FeedItem>> LoadItemsAsync(bool forceRefresh = false)
         {
-			var config = Config.Config.Read();
-			Auth.SetUserCredentials(config.TwitterConsumerKey,
-			                        config.TwitterConsumerSecret,
-			                        config.TwitterUserAccessToken,
-			                        config.TwitterUserAccessSercret);
-			items = Timeline.GetUserTimeline("alo_oficial")
-					.Select(it => new FeedItem
-					{
-						Id = it.Id.ToString(),
-						Text = it.CreatedBy.Name,
-						Description = it.Text,
-				        Urls = it.Urls
-				                 .Select(url => url.ToString())
-				                 .ToList(),
-				        ImageUrls = it.Media
-				                  .Where(media => media.MediaType == "photo")
-				                  .Select(photo => photo.MediaURL)
-				                  .ToList(),
-                    }).ToList();
+            var config = Config.Config.Read();
+            Auth.SetUserCredentials(config.TwitterConsumerKey,
+                                    config.TwitterConsumerSecret,
+                                    config.TwitterUserAccessToken,
+                                    config.TwitterUserAccessSercret);
+            var rawItems = Timeline.GetUserTimeline("alo_oficial");
+            items = rawItems
+                .Select(it =>
+                {
+                    System.Diagnostics.Debug.WriteLine("! -------------------- RT: {0}", it.IsRetweet);
+                    it.Urls.ForEach(url =>
+                                    System.Diagnostics.Debug.WriteLine("Url: " + url));
+                    it.Media.ForEach(media =>
+                                     System.Diagnostics.Debug.WriteLine("Media: {0} - {1}", media.MediaType, media.MediaURL));
 
+                    return new FeedItem
+                    {
+                        Id = it.Id.ToString(),
+                        Text = it.CreatedBy.Name,
+                        Description = it.Text,
+                        Urls = it.Urls
+                         .Select(url => url.ToString())
+                         .ToList(),
+                        ImageUrls = it.Media
+                          .Where(media => media.MediaType == "photo")
+                          .Select(photo => photo.MediaURL)
+                          .ToList(),
+                        IsRetweet = it.IsRetweet,
+                        RetweetImageUrls = it.RetweetedTweet?.Media
+                          .Where(media => media.MediaType == "photo")
+                          .Select(photo => photo.MediaURL)
+                          .ToList(),
+                    };
+                }).ToList();
+            
             return await Task.FromResult(items);
         }
     }
