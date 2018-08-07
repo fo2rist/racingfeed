@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using racingfeed.Models;
 using Tweetinvi;
+using Tweetinvi.Models;
 using Tweetinvi.Models.Entities;
 
 [assembly: Xamarin.Forms.Dependency(typeof(racingfeed.Services.TwitterDataStore))]
@@ -31,37 +31,46 @@ namespace racingfeed.Services
                                     config.TwitterConsumerSecret,
                                     config.TwitterUserAccessToken,
                                     config.TwitterUserAccessSercret);
-            var rawItems = Timeline.GetUserTimeline("alo_oficial");
-            items = rawItems
-                .Select(it =>
-                {
-                    System.Diagnostics.Debug.WriteLine("! -------------------- RT: {0}", it.IsRetweet);
-                    it.Urls.ForEach(url =>
-                                    System.Diagnostics.Debug.WriteLine("Url: " + url));
-                    it.Media.ForEach(media =>
-                                     System.Diagnostics.Debug.WriteLine("Media: {0} - {1}", media.MediaType, media.MediaURL));
-
-                    return new FeedItem
-                    {
-                        Id = it.Id.ToString(),
-                        Text = it.CreatedBy.Name,
-                        Description = it.Text,
-                        Urls = it.Urls
-                         .Select(url => url.ToString())
-                         .ToList(),
-                        ImageUrls = it.Media
-                          .Where(media => media.MediaType == "photo")
-                          .Select(photo => photo.MediaURL)
-                          .ToList(),
-                        IsRetweet = it.IsRetweet,
-                        RetweetImageUrls = it.RetweetedTweet?.Media
-                          .Where(media => media.MediaType == "photo")
-                          .Select(photo => photo.MediaURL)
-                          .ToList(),
-                    };
-                }).ToList();
+            
+            items = (from tweet in Timeline.GetUserTimeline("alo_oficial")
+                     select tweet.ToFeedItem()
+            ).ToList();
             
             return await Task.FromResult(items);
+        }
+    }
+
+    static class Ext
+    {
+        private static string MEDIA_TYPE_PHOTO = "photo";
+
+        public static FeedItem ToFeedItem(this ITweet tweet)
+        {
+            return new FeedItem
+            {
+                Id = tweet.Id.ToString(),
+                Text = tweet.CreatedBy.Name,
+                Description = tweet.Text,
+                Urls = tweet.Urls.ToUrlsList(),
+                ImageUrls = tweet.Media.ToUrlsList(),
+                IsRetweet = tweet.IsRetweet,
+                RetweetImageUrls = tweet.RetweetedTweet?.Media.ToUrlsList(),
+            };
+        }
+
+        public static List<string> ToUrlsList(this List<IUrlEntity> urlsList)
+        {
+            return (from url in urlsList
+                select url.ToString()
+            ).ToList();
+        }
+
+        public static List<string> ToUrlsList(this List<IMediaEntity> mediaList)
+        {
+            return (from media in mediaList
+                where media.MediaType == MEDIA_TYPE_PHOTO
+                select media.MediaURL
+            ).ToList();
         }
     }
 }
