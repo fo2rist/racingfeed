@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using Xamarin.Forms;
 
 using racingfeed.Models;
-using racingfeed.Services;
+using racingfeed.Repositories;
 
 namespace racingfeed.ViewModels
 {

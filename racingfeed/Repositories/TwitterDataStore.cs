@@ -3,40 +3,36 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using racingfeed.Models;
-using Tweetinvi;
+using racingfeed.Services;
 using Tweetinvi.Models;
 using Tweetinvi.Models.Entities;
+using Xamarin.Forms;
 
-[assembly: Xamarin.Forms.Dependency(typeof(racingfeed.Services.TwitterDataStore))]
-namespace racingfeed.Services
+[assembly: Dependency(typeof(racingfeed.Repositories.TwitterDataStore))]
+namespace racingfeed.Repositories
 {
     public class TwitterDataStore : IDataStore<FeedItem>
     {
-        List<FeedItem> items;
+        public ITwitterService WebService => DependencyService.Get<ITwitterService>() ?? new MockTwitterService();
 
-        public TwitterDataStore()
-        {
-            items = new List<FeedItem>();
-        }
+        List<FeedItem> itemsCache = new List<FeedItem>();
+
+        public TwitterDataStore() { }
 
         public async Task<FeedItem> GetItemAsync(string id)
         {
-            return await Task.FromResult(items.FirstOrDefault(it => it.Id == id));
+            return await Task.FromResult(itemsCache.FirstOrDefault(it => it.Id == id));
         }
 
         public async Task<IEnumerable<FeedItem>> LoadItemsAsync(bool forceRefresh = false)
         {
-            var config = Config.Config.Read();
-            Auth.SetUserCredentials(config.TwitterConsumerKey,
-                                    config.TwitterConsumerSecret,
-                                    config.TwitterUserAccessToken,
-                                    config.TwitterUserAccessSercret);
+            itemsCache.Clear();
+            itemsCache.AddRange(
+                from tweet in await WebService.LoadTimelineAsync("alo_oficial")
+                select tweet.ToFeedItem()
+            );
             
-            items = (from tweet in Timeline.GetUserTimeline("alo_oficial")
-                     select tweet.ToFeedItem()
-            ).ToList();
-            
-            return await Task.FromResult(items);
+            return await Task.FromResult(itemsCache);
         }
     }
 

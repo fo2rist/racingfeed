@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using racingfeed.Models;
 
-namespace racingfeed.Services
+namespace racingfeed.Repositories
 {
     public class MockDataStore : IDataStore<FeedItem>
     {

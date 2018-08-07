@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace racingfeed.Services
+namespace racingfeed.Repositories
 {
     public interface IDataStore<T>
     {
