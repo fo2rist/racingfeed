@@ -15,16 +15,26 @@ namespace racingfeed.ViewModels
         public ObservableCollection<FeedItem> Items { get; set; }
         public Command LoadItemsCommand { get; set; }
 
+        /// <summary>
+        /// Display username to load tweets.
+        /// </summary>
+        readonly string username = "";
+
         public ItemsViewModel()
         {
             Title = "Browse";
             Items = new ObservableCollection<FeedItem>();
-            LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
+            LoadItemsCommand = new Command(async () => ExecuteLoadItemsCommand());
 
 			MessagingCenter.Subscribe<NewItemPage, FeedItem>(this, "SomeCommand", (obj, item) =>
             {
                 // do some work
             });
+        }
+
+        public ItemsViewModel(string username) : this()
+        {
+            this.username = username;
         }
 
         async Task ExecuteLoadItemsCommand()
@@ -37,7 +47,7 @@ namespace racingfeed.ViewModels
             try
             {
                 Items.Clear();
-                var items = await DataStore.LoadItemsAsync(true);
+                var items = await DataStore.LoadItemsAsync(username, true);
                 foreach (var item in items)
                 {
                     Items.Add(item);

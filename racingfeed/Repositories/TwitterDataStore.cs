@@ -19,16 +19,11 @@ namespace racingfeed.Repositories
 
         public TwitterDataStore() { }
 
-        public async Task<FeedItem> GetItemAsync(string id)
-        {
-            return await Task.FromResult(itemsCache.FirstOrDefault(it => it.Id == id));
-        }
-
-        public async Task<IEnumerable<FeedItem>> LoadItemsAsync(bool forceRefresh = false)
+        public async Task<IEnumerable<FeedItem>> LoadItemsAsync(string username, bool forceRefresh = false)
         {
             itemsCache.Clear();
             itemsCache.AddRange(
-                from tweet in await WebService.LoadTimelineAsync("alo_oficial")
+                from tweet in await WebService.LoadTimelineAsync(username)
                 select tweet.ToFeedItem()
             );
             

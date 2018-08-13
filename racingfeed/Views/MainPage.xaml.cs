@@ -11,6 +11,10 @@ namespace racingfeed.Views
         public MainPage()
         {
             InitializeComponent();
+            Children.Add(new NavigationPage(new ItemsPage("mclarenf1"))
+            {
+                Title = "McLaren"
+            });
         }
     }
 }

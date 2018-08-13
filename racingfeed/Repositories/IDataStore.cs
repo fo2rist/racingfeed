@@ -6,7 +6,6 @@ namespace racingfeed.Repositories
 {
     public interface IDataStore<T>
     {
-        Task<T> GetItemAsync(string id);
-        Task<IEnumerable<T>> LoadItemsAsync(bool forceRefresh = false);
+        Task<IEnumerable<T>> LoadItemsAsync(string username, bool forceRefresh = false);
     }
 }

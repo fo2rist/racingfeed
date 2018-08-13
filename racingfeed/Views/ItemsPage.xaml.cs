@@ -25,6 +25,13 @@ namespace racingfeed.Views
             BindingContext = viewModel = new ItemsViewModel();
         }
 
+        public ItemsPage(string username)
+        {
+            InitializeComponent();
+
+            BindingContext = viewModel = new ItemsViewModel(username);
+        }
+
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
             var item = args.SelectedItem as FeedItem;
